@@ -459,12 +459,11 @@ function renderBouquet() {
 
   if (CFGS[n]) {
     const cfg = CFGS[n];
-    const backBy = H - 42;
     const backSel = selected.slice(0, cfg.b.length);
     const frontSel = selected.slice(cfg.b.length);
     let out = '';
     [...cfg.b].sort((a,b) => Math.abs(b.a)-Math.abs(a.a)).forEach(p => {
-      out += drawItem(backSel[cfg.b.indexOf(p)], bx, backBy, p.a);
+      out += drawItem(backSel[cfg.b.indexOf(p)], bx, H, p.a);
     });
     [...cfg.f].sort((a,b) => Math.abs(b.a)-Math.abs(a.a)).forEach(p => {
       out += drawItem(frontSel[cfg.f.indexOf(p)], bx, H, p.a);
