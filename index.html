@@ -438,7 +438,7 @@ function renderBouquet() {
 
   const W=300, H=360, n=selected.length;
   const bx = W/2, by = H - 10; // stem base (bouquet gathering point)
-  const fw = n <= 3 ? 120 : n <= 6 ? 100 : Math.max(55, Math.floor(500/n));
+  const fw = n <= 1 ? 180 : n <= 3 ? 160 : n <= 6 ? 130 : Math.max(65, Math.floor(680/n));
   const fh = Math.round(fw * 4 / 3);
 
   // Fan angles: spread flowers radially from stem base
@@ -492,19 +492,32 @@ function flowerElem(type, hex, cx, cy) {
   }
 }
 
-/* ---- Pinch zoom for bouquet area ---- */
+/* ---- Pinch zoom + pan for bouquet area ---- */
 (function() {
   const SVG_W = 300, SVG_H = 360;
   const wrap = document.querySelector('.bouquet-wrap');
   const svg  = document.getElementById('bouquet-svg');
+
   let scale = 1, lastScale = 1;
+  let vx = 0, vy = 0, savedVx = 0, savedVy = 0;
   let startDist = 0;
+  let panStart = null;
   let lastTap = 0;
 
-  function setView(s) {
-    scale = Math.min(4, Math.max(0.4, s));
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+  function applyView() {
     const vw = SVG_W / scale, vh = SVG_H / scale;
-    svg.setAttribute('viewBox', `${(SVG_W-vw)/2} ${(SVG_H-vh)/2} ${vw} ${vh}`);
+    const pad = SVG_W * 0.5;
+    vx = clamp(vx, -pad, SVG_W + pad - vw);
+    vy = clamp(vy, -pad, SVG_H + pad - vh);
+    svg.setAttribute('viewBox', `${vx} ${vy} ${vw} ${vh}`);
+  }
+
+  function resetView() {
+    scale = 1; lastScale = 1;
+    vx = 0; vy = 0; savedVx = 0; savedVy = 0;
+    svg.setAttribute('viewBox', `0 0 ${SVG_W} ${SVG_H}`);
   }
 
   wrap.addEventListener('touchstart', e => {
@@ -513,29 +526,40 @@ function flowerElem(type, hex, cx, cy) {
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-    }
-    if (e.touches.length === 1) {
+      savedVx = vx; savedVy = vy;
+      panStart = null;
+    } else if (e.touches.length === 1) {
+      panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, vx, vy };
       const now = Date.now();
-      if (now - lastTap < 300) { scale = 1; lastScale = 1; setView(1); }
+      if (now - lastTap < 300) resetView();
       lastTap = now;
     }
   }, { passive: true });
 
   wrap.addEventListener('touchmove', e => {
+    e.preventDefault();
     if (e.touches.length === 2) {
-      e.preventDefault();
       const dist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
       );
-      setView(lastScale * (dist / startDist));
+      scale = clamp(lastScale * (dist / startDist), 0.4, 5);
+      vx = savedVx; vy = savedVy;
+      applyView();
+    } else if (e.touches.length === 1 && panStart) {
+      const rect = wrap.getBoundingClientRect();
+      vx = panStart.vx - (e.touches[0].clientX - panStart.x) / rect.width  * (SVG_W / scale);
+      vy = panStart.vy - (e.touches[0].clientY - panStart.y) / rect.height * (SVG_H / scale);
+      applyView();
     }
   }, { passive: false });
 
   wrap.addEventListener('touchend', e => {
-    if (e.touches.length < 2) lastScale = scale;
+    lastScale = scale;
+    savedVx = vx; savedVy = vy;
+    if (e.touches.length === 0) panStart = null;
   }, { passive: true });
-})();
+})());
 
 // Init
 refresh();
