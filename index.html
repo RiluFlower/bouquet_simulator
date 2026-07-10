@@ -436,25 +436,34 @@ function renderBouquet() {
   emptyMsg.style.display = 'none';
 
   const W=300, H=360, n=selected.length;
-  const cfg = getPositions(n);
-  const fw = n <= 5 ? 120 : Math.max(50, Math.floor(540 / n));
+  const bx = W/2, by = H - 10; // stem base (bouquet gathering point)
+  const fw = n <= 3 ? 120 : n <= 6 ? 100 : Math.max(55, Math.floor(500/n));
   const fh = Math.round(fw * 4 / 3);
-  const bx = W/2, by = H-28;
+
+  // Fan angles: spread flowers radially from stem base
+  const maxAngle = n <= 1 ? 0 : Math.min(52, (n - 1) * 11);
+  const getAngle = i => n <= 1 ? 0 : -maxAngle + i * (2 * maxAngle / (n - 1));
+
+  // Draw outermost flowers first so center appears on top
+  const drawOrder = [...Array(n).keys()].sort((a, b) =>
+    Math.abs(getAngle(b) - 0) - Math.abs(getAngle(a) - 0)
+  );
 
   let out = '';
-
-  // Flowers
-  cfg.forEach((p,i) => {
+  drawOrder.forEach(i => {
     const s = selected[i];
-    const fx = p.fx*W, fy = p.fy*H;
+    const angle = getAngle(i);
     if (s.imgUrl) {
       out += `<image href="${s.imgUrl}"
-        x="${fx-fw/2}" y="${fy-fh*0.75}" width="${fw}" height="${fh}"
+        x="${bx - fw/2}" y="${by - fh}" width="${fw}" height="${fh}"
+        transform="rotate(${angle.toFixed(1)} ${bx} ${by})"
         preserveAspectRatio="xMidYMid meet"
-        style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.12))"/>`;
+        style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>`;
     } else {
-      // inline SVG fallback (converted to SVG elements)
-      out += flowerElem(s.ftype, s.chex, fx, fy);
+      const rad = angle * Math.PI / 180;
+      const cx = bx + Math.sin(rad) * fh * 0.55;
+      const cy = by - Math.cos(rad) * fh * 0.55;
+      out += flowerElem(s.ftype, s.chex, cx, cy);
     }
   });
 
