@@ -427,23 +427,6 @@ function renderBouquet() {
 
   let out = '';
 
-  // Stems
-  cfg.forEach((p,i) => {
-    const fx = p.fx*W, fy = p.fy*H;
-    out += `<line x1="${fx}" y1="${fy+60}" x2="${bx}" y2="${by-8}"
-      stroke="#6a9e5a" stroke-width="1.8" stroke-linecap="round" opacity="0.85"/>`;
-  });
-
-  // Ribbon
-  out += `
-    <path d="M${bx-20} ${by-4} Q${bx} ${by-28} ${bx+20} ${by-4}"
-      fill="none" stroke="#e8a0a0" stroke-width="3" stroke-linecap="round"/>
-    <path d="M${bx-20} ${by-4} C${bx-34} ${by+12} ${bx-12} ${by+18} ${bx} ${by+2}"
-      fill="#f4c0b8" opacity="0.85"/>
-    <path d="M${bx+20} ${by-4} C${bx+34} ${by+12} ${bx+12} ${by+18} ${bx} ${by+2}"
-      fill="#f4c0b8" opacity="0.85"/>
-    <circle cx="${bx}" cy="${by}" r="4.5" fill="#e89090"/>`;
-
   // Flowers
   cfg.forEach((p,i) => {
     const s = selected[i];
