@@ -156,7 +156,7 @@
 
 <header>
   <h1>Bouquet Simulator</h1>
-  <p>お花を選んでブーケを作ろう（最大5本）</p>
+  <p>お花を選んでブーケを作ろう</p>
 </header>
 
 <div class="bouquet-wrap">
@@ -189,7 +189,7 @@
 
 <script>
 const BASE = 'https://riluflower.github.io/bouquet_simulator/';
-const MAX = 5;
+
 
 const HEX = {
   'ホワイトセージ':'#e8ede5','ホワイトオリーブ':'#dde8d0',
@@ -331,7 +331,6 @@ function renderGrid() {
 
 /* ---- Bottom sheet ---- */
 function openSheet(fid) {
-  if (selected.length >= MAX) { alert(`You can select up to ${MAX} flowers`); return; }
   currentFlower = FLOWERS.find(f => f.id === fid);
   currentColorIdx = 0;
   document.getElementById('sheet-flower-name').textContent = currentFlower.name;
@@ -415,6 +414,15 @@ const CONFIGS = {
   4:[{fx:.18,fy:.4},{fx:.42,fy:.28},{fx:.62,fy:.28},{fx:.82,fy:.4}],
   5:[{fx:.12,fy:.44},{fx:.32,fy:.3},{fx:.52,fy:.24},{fx:.72,fy:.3},{fx:.88,fy:.44}],
 };
+function getPositions(n) {
+  if (CONFIGS[n]) return CONFIGS[n];
+  const pos = [];
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1);
+    pos.push({ fx: 0.04 + t * 0.92, fy: 0.48 - 0.24 * Math.sin(Math.PI * t) });
+  }
+  return pos;
+}
 
 function renderBouquet() {
   const svg = document.getElementById('bouquet-svg');
@@ -427,7 +435,9 @@ function renderBouquet() {
   emptyMsg.style.display = 'none';
 
   const W=300, H=360, n=selected.length;
-  const cfg = CONFIGS[n];
+  const cfg = getPositions(n);
+  const fw = n <= 5 ? 120 : Math.max(50, Math.floor(540 / n));
+  const fh = Math.round(fw * 4 / 3);
   const bx = W/2, by = H-28;
 
   let out = '';
@@ -438,7 +448,7 @@ function renderBouquet() {
     const fx = p.fx*W, fy = p.fy*H;
     if (s.imgUrl) {
       out += `<image href="${s.imgUrl}"
-        x="${fx-60}" y="${fy-120}" width="120" height="160"
+        x="${fx-fw/2}" y="${fy-fh*0.75}" width="${fw}" height="${fh}"
         preserveAspectRatio="xMidYMid meet"
         style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.12))"/>`;
     } else {
