@@ -437,8 +437,8 @@ function renderBouquet() {
   emptyMsg.style.display = 'none';
 
   const W=300, H=360, n=selected.length;
-  const bx = W/2, by = H - 10; // stem base (bouquet gathering point)
-  const fw = n <= 1 ? 180 : n <= 3 ? 160 : n <= 6 ? 130 : Math.max(65, Math.floor(680/n));
+  const bx = W/2, by = H; // stem base at very bottom
+  const fw = n <= 1 ? 270 : n <= 3 ? 240 : n <= 6 ? 200 : Math.max(100, Math.floor(1100/n));
   const fh = Math.round(fw * 4 / 3);
 
   // Fan angles: spread flowers radially from stem base
