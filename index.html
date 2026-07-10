@@ -433,27 +433,53 @@ function renderBouquet() {
   emptyMsg.style.display = 'none';
 
   const W=300, H=360, n=selected.length;
-  const bx = W/2, by = H;
-  const fw = n <= 1 ? 270 : n <= 3 ? 240 : n <= 6 ? 200 : Math.max(100, Math.floor(1100/n));
+  const bx = W/2;
+  const fw = n<=1?270 : n<=3?240 : n<=5?210 : n<=7?190 : Math.max(100, Math.floor(1100/n));
   const fh = Math.round(fw * 4/3);
 
-  const maxAngle = n <= 1 ? 0 : Math.min(52, (n-1)*11);
-  const getAngle = i => n <= 1 ? 0 : -maxAngle + i*(2*maxAngle/(n-1));
-  const drawOrder = [...Array(n).keys()].sort((a,b) => Math.abs(getAngle(b)) - Math.abs(getAngle(a)));
+  const CFGS = {
+    1: {b:[],                                          f:[{a:0,   s:1.0}]},
+    2: {b:[{a:-20,s:.85}],                             f:[{a:18,  s:1.0}]},
+    3: {b:[{a:-28,s:.85},{a:28,s:.85}],                f:[{a:0,   s:1.0}]},
+    4: {b:[{a:-32,s:.85},{a:32,s:.85}],                f:[{a:-15, s:1.0},{a:15, s:1.0}]},
+    5: {b:[{a:-36,s:.82},{a:0,s:.86},{a:36,s:.82}],   f:[{a:-17, s:1.0},{a:17, s:1.0}]},
+    6: {b:[{a:-38,s:.82},{a:-12,s:.85},{a:12,s:.85},{a:38,s:.82}], f:[{a:-20,s:1.0},{a:20,s:1.0}]},
+    7: {b:[{a:-40,s:.80},{a:-14,s:.84},{a:14,s:.84},{a:40,s:.80}], f:[{a:-22,s:1.0},{a:0,s:1.0},{a:22,s:1.0}]},
+  };
 
-  let out = '';
-  drawOrder.forEach(i => {
-    const s = selected[i];
-    const angle = getAngle(i);
+  function drawItem(s, ax, ay, angle, ifw, ifh) {
+    if (!s) return '';
     if (s.imgUrl) {
-      out += '<image href="' + s.imgUrl + '" x="' + (bx-fw/2) + '" y="' + (by-fh) + '" width="' + fw + '" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + by + ')" preserveAspectRatio="xMidYMid meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
+      return '<image href="' + s.imgUrl + '" x="' + (ax-ifw/2) + '" y="' + (ay-ifh) + '" width="' + ifw + '" height="' + ifh + '" transform="rotate(' + angle.toFixed(1) + ' ' + ax + ' ' + ay + ')" preserveAspectRatio="xMidYMid meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
     } else {
       const rad = angle * Math.PI / 180;
-      const cx = bx + Math.sin(rad)*fh*0.55;
-      const cy = by - Math.cos(rad)*fh*0.55;
-      out += flowerElem(s.ftype, s.chex, cx, cy);
+      return flowerElem(s.ftype, s.chex, ax + Math.sin(rad)*ifh*0.55, ay - Math.cos(rad)*ifh*0.55);
     }
-  });
+  }
+
+  if (CFGS[n]) {
+    const cfg = CFGS[n];
+    const backBy = H - 42;
+    const backSel = selected.slice(0, cfg.b.length);
+    const frontSel = selected.slice(cfg.b.length);
+    let out = '';
+    [...cfg.b].sort((a,b) => Math.abs(b.a)-Math.abs(a.a)).forEach(p => {
+      const ifw = Math.round(fw*p.s), ifh = Math.round(ifw*4/3);
+      out += drawItem(backSel[cfg.b.indexOf(p)], bx, backBy, p.a, ifw, ifh);
+    });
+    [...cfg.f].sort((a,b) => Math.abs(b.a)-Math.abs(a.a)).forEach(p => {
+      const ifw = Math.round(fw*p.s), ifh = Math.round(ifw*4/3);
+      out += drawItem(frontSel[cfg.f.indexOf(p)], bx, H, p.a, ifw, ifh);
+    });
+    svg.innerHTML = out;
+    return;
+  }
+
+  const maxAngle = Math.min(52, (n-1)*9);
+  const getAngle = i => -maxAngle + i*(2*maxAngle/(n-1));
+  const drawOrder = [...Array(n).keys()].sort((a,b) => Math.abs(getAngle(b))-Math.abs(getAngle(a)));
+  let out = '';
+  drawOrder.forEach(i => { out += drawItem(selected[i], bx, H, getAngle(i), fw, fh); });
   svg.innerHTML = out;
 }
 function flowerElem(type, hex, cx, cy) {
