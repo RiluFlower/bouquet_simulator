@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ニットフラワー ブーケシミュレーター | RILU</title>
+  <title>Knit Flower Bouquet Simulator | RILU</title>
   <style>
     :root {
-      --bg: #fdf6f0;
+      --bg: #d6f0ef;
       --accent: #c0756a;
-      --text: #4a3728;
+      --text: #222222;
       --light: #ffffff;
-      --border: #f0ddd0;
+      --border: #a8d8d6;
       --green: #6a9e5a;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
-      font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
       max-width: 430px;
@@ -34,8 +34,8 @@
       text-align: center;
       flex-shrink: 0;
     }
-    header h1 { font-size: 1rem; color: var(--accent); letter-spacing: 0.06em; }
-    header p  { font-size: 0.7rem; color: #b09080; margin-top: 2px; }
+    header h1 { font-size: 1rem; color: var(--text); letter-spacing: 0.06em; }
+    header p  { font-size: 0.7rem; color: #666; margin-top: 2px; }
 
     /* Bouquet */
     .bouquet-wrap {
@@ -74,7 +74,7 @@
     }
     .sel-chip .dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
     .sel-chip .rm { margin-left:2px; font-size:0.8rem; color:#b09080; cursor:pointer; line-height:1; }
-    .empty-bar { color:#c0a898; font-size:0.75rem; }
+    .empty-bar { color:#888; font-size:0.75rem; }
     .clear-btn {
       margin-left: auto; background: none;
       border: 1px solid var(--border); border-radius: 20px;
@@ -84,7 +84,7 @@
 
     /* Picker */
     .picker-section { padding: 12px 12px 80px; flex: 1; overflow-y: auto; }
-    .picker-section h2 { font-size: 0.75rem; color: #b09080; letter-spacing: 0.06em; margin-bottom: 10px; }
+    .picker-section h2 { font-size: 0.75rem; color: #555; letter-spacing: 0.06em; margin-bottom: 10px; }
     .flower-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .flower-card {
       background: var(--light); border: 1.5px solid var(--border);
@@ -128,7 +128,7 @@
     .sheet-handle { width:36px; height:4px; background:#ddd; border-radius:2px; margin:10px auto 6px; }
     .sheet-header { padding:4px 16px 12px; border-bottom:1px solid var(--border); }
     .sheet-flower-name { font-size:1rem; font-weight:bold; color:var(--text); }
-    .sheet-sub { font-size:0.7rem; color:#b09080; margin-top:2px; }
+    .sheet-sub { font-size:0.7rem; color:#666; margin-top:2px; }
     .color-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:14px; }
     .color-option {
       border:2px solid var(--border); border-radius:12px;
@@ -153,24 +153,24 @@
 <body>
 
 <header>
-  <h1>🌸 ブーケシミュレーター</h1>
-  <p>お好みのお花を選んでブーケを作ろう（最大5本）</p>
+  <h1>🌸 Bouquet Simulator</h1>
+  <p>Choose your flowers and build a bouquet (up to 5)</p>
 </header>
 
 <div class="bouquet-wrap">
   <svg id="bouquet-svg" viewBox="0 0 300 360" xmlns="http://www.w3.org/2000/svg"></svg>
   <div class="empty-msg" id="empty-msg">
     <span class="ico">💐</span>
-    <span>下のグリッドからお花を選んでね</span>
+    <span>Select flowers from the grid below</span>
   </div>
 </div>
 
 <div class="selected-bar" id="selected-bar">
-  <span class="empty-bar">まだお花が選ばれていません</span>
+  <span class="empty-bar">No flowers selected yet</span>>No flowers selected yet<
 </div>
 
 <div class="picker-section">
-  <h2>— お花を選ぶ —</h2>
+  <h2>— Choose Flowers —</h2>
   <div class="flower-grid" id="flower-grid"></div>
 </div>
 
@@ -179,10 +179,10 @@
   <div class="sheet-handle"></div>
   <div class="sheet-header">
     <div class="sheet-flower-name" id="sheet-flower-name"></div>
-    <div class="sheet-sub">カラーを選んでください</div>
+    <div class="sheet-sub">Choose a color</div>
   </div>
   <div class="color-grid" id="color-grid"></div>
-  <button class="sheet-add-btn" onclick="addFlower()">ブーケに追加</button>
+  <button class="sheet-add-btn" onclick="addFlower()">Add to Bouquet</button>
 </div>
 
 <script>
@@ -329,7 +329,7 @@ function renderGrid() {
 
 /* ---- Bottom sheet ---- */
 function openSheet(fid) {
-  if (selected.length >= MAX) { alert(`最大${MAX}本まで選べます`); return; }
+  if (selected.length >= MAX) { alert(`You can select up to ${MAX} flowers`); return; }
   currentFlower = FLOWERS.find(f => f.id === fid);
   currentColorIdx = 0;
   document.getElementById('sheet-flower-name').textContent = currentFlower.name;
@@ -402,7 +402,7 @@ function renderBar() {
       <span style="color:#b09080;font-size:0.6rem">${s.cname}</span>
       <span class="rm" onclick="removeItem(${i})">✕</span>
     </div>`).join('') +
-    `<button class="clear-btn" onclick="clearAll()">クリア</button>`;
+    `<button class="clear-btn" onclick="clearAll()">Clear</button>`;
 }
 
 /* ---- Bouquet SVG ---- */
