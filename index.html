@@ -113,6 +113,19 @@
       font-size:0.6rem; display:flex; align-items:center; justify-content:center;
     }
 
+    /* Mode selector */
+    .mode-bar {
+      display: flex; gap: 6px; padding: 8px 12px;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+      justify-content: center; flex-shrink: 0;
+    }
+    .mode-btn {
+      border: 1.5px solid var(--border); border-radius: 20px;
+      padding: 5px 13px; font-size: 0.68rem; background: #fff;
+      cursor: pointer; color: var(--text); white-space: nowrap;
+    }
+    .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
     /* Bottom Sheet */
     .sheet-overlay {
       position:fixed; inset:0; background:rgba(0,0,0,0.4);
@@ -160,6 +173,13 @@
   <h1>Bouquet Simulator</h1>
   <p>お花を選んでブーケを作ろう</p>
 </header>
+
+<div class="mode-bar">
+  <button onclick="setMode('fan')" class="mode-btn active" data-mode="fan">扇形</button>
+  <button onclick="setMode('round')" class="mode-btn" data-mode="round">ラウンド</button>
+  <button onclick="setMode('cascade')" class="mode-btn" data-mode="cascade">カスケード</button>
+  <button onclick="setMode('clutch')" class="mode-btn" data-mode="clutch">クラッチ</button>
+</div>
 
 <div class="bouquet-wrap">
   <svg id="bouquet-svg" viewBox="0 0 300 360" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -260,6 +280,15 @@ const FLOWERS = [
 let selected = [];
 let currentFlower = null;
 let currentColorIdx = 0;
+let bouquetMode = 'fan';
+
+function setMode(m) {
+  bouquetMode = m;
+  document.querySelectorAll('.mode-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === m)
+  );
+  renderBouquet();
+}
 
 /* ---- SVG fallback shapes ---- */
 function svgShape(type, hex, w, h) {
@@ -429,48 +458,79 @@ function getPositions(n) {
 function renderBouquet() {
   const svg = document.getElementById('bouquet-svg');
   const emptyMsg = document.getElementById('empty-msg');
-  if (!selected.length) {
-    svg.innerHTML = '';
-    emptyMsg.style.display = 'flex';
-    return;
-  }
+  if (!selected.length) { svg.innerHTML = ''; emptyMsg.style.display = 'flex'; return; }
   emptyMsg.style.display = 'none';
 
   const W=300, H=360, n=selected.length;
-  const bx = W/2, by = H; // stem base at very bottom
+  const cx = W/2, by = H;
   const fw = n <= 1 ? 270 : n <= 3 ? 240 : n <= 6 ? 200 : Math.max(100, Math.floor(1100/n));
-  const fh = Math.round(fw * 4 / 3);
+  const fh = Math.round(fw * 4/3);
 
-  // Fan angles: spread flowers radially from stem base
-  const maxAngle = n <= 1 ? 0 : Math.min(52, (n - 1) * 11);
-  const getAngle = i => n <= 1 ? 0 : -maxAngle + i * (2 * maxAngle / (n - 1));
+  let items = [];
 
-  // Draw outermost flowers first so center appears on top
-  const drawOrder = [...Array(n).keys()].sort((a, b) =>
-    Math.abs(getAngle(b) - 0) - Math.abs(getAngle(a) - 0)
-  );
+  if (bouquetMode === 'fan') {
+    const maxA = n <= 1 ? 0 : Math.min(52, (n-1)*11);
+    const ga = i => n <= 1 ? 0 : -maxA + i*(2*maxA/(n-1));
+    items = [...Array(n).keys()]
+      .sort((a,b) => Math.abs(ga(b)) - Math.abs(ga(a)))
+      .map(i => ({si:i, ax:cx, ay:by, angle:ga(i), fw, fh}));
+  }
+
+  else if (bouquetMode === 'round') {
+    const back = Math.ceil(n/2), front = Math.floor(n/2);
+    const bfw = Math.round(fw*0.78), bfh = Math.round(bfw*4/3);
+    const backMax = Math.min(72, back*16);
+    const frontMax = Math.min(36, front*14);
+    for (let i=0; i<back; i++) {
+      const a = back<=1 ? 0 : -backMax + i*(2*backMax/(back-1));
+      items.push({si:i, ax:cx, ay:by-50, angle:a, fw:bfw, fh:bfh, layer:0});
+    }
+    for (let i=0; i<front; i++) {
+      const a = front<=1 ? 0 : -frontMax + i*(2*frontMax/(front-1));
+      items.push({si:back+i, ax:cx, ay:by, angle:a, fw, fh, layer:1});
+    }
+    items.sort((a,b) => a.layer - b.layer || Math.abs(b.angle) - Math.abs(a.angle));
+  }
+
+  else if (bouquetMode === 'cascade') {
+    const tilt = -42;
+    items = [...Array(n).keys()].map(i => {
+      const t = n<=1 ? 0.5 : i/(n-1);
+      const ax = cx + 100 - t*170;
+      const ay = H*0.22 + t*(H*0.72);
+      const sc = 0.65 + 0.6*t;
+      const ifw = Math.round(fw*sc), ifh = Math.round(ifw*4/3);
+      return {si:i, ax, ay, angle:tilt, fw:ifw, fh:ifh};
+    }).reverse();
+  }
+
+  else if (bouquetMode === 'clutch') {
+    const cols = n<=2 ? n : n<=6 ? 2 : 3;
+    const colSp = Math.min(fw*0.55, W/(cols+1));
+    const rowSp = Math.min(fh*0.28, (H*0.72)/Math.ceil(n/cols));
+    items = [...Array(n).keys()].map(i => {
+      const col = i%cols, row = Math.floor(i/cols);
+      const ax = cx + (col-(cols-1)/2)*colSp;
+      const ay = by - row*rowSp;
+      return {si:i, ax, ay, angle:(col-(cols-1)/2)*6, fw, fh};
+    }).sort((a,b) => a.ay - b.ay);
+  }
 
   let out = '';
-  drawOrder.forEach(i => {
-    const s = selected[i];
-    const angle = getAngle(i);
+  items.forEach(item => {
+    const s = selected[item.si];
+    const ifw = item.fw, ifh = item.fh;
     if (s.imgUrl) {
-      out += `<image href="${s.imgUrl}"
-        x="${bx - fw/2}" y="${by - fh}" width="${fw}" height="${fh}"
-        transform="rotate(${angle.toFixed(1)} ${bx} ${by})"
-        preserveAspectRatio="xMidYMid meet"
-        style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>`;
+      out += '<image href="' + s.imgUrl + '" x="' + (item.ax-ifw/2).toFixed(1) + '" y="' + (item.ay-ifh).toFixed(1) + '" width="' + ifw + '" height="' + ifh + '" transform="rotate(' + item.angle.toFixed(1) + ' ' + item.ax.toFixed(1) + ' ' + item.ay.toFixed(1) + ')" preserveAspectRatio="xMidYMid meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
     } else {
-      const rad = angle * Math.PI / 180;
-      const cx = bx + Math.sin(rad) * fh * 0.55;
-      const cy = by - Math.cos(rad) * fh * 0.55;
-      out += flowerElem(s.ftype, s.chex, cx, cy);
+      const rad = item.angle * Math.PI / 180;
+      const ecx = item.ax + Math.sin(rad)*ifh*0.55;
+      const ecy = item.ay - Math.cos(rad)*ifh*0.55;
+      out += flowerElem(s.ftype, s.chex, ecx, ecy);
     }
   });
-
   svg.innerHTML = out;
 }
-
 function flowerElem(type, hex, cx, cy) {
   const c = hex || '#e0c0c0';
   switch(type) {
