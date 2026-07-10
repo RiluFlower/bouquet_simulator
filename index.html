@@ -139,7 +139,8 @@
     }
     .color-option:active { transform:scale(0.95); }
     .color-option.active { border-color:var(--accent); background:#fff5f3; }
-    .color-option img { width:56px; height:76px; object-fit:contain; display:block; margin:0 auto; }
+    .color-option .img-wrap { width:80px; height:100px; overflow:hidden; margin:0 auto; }
+    .color-option img { width:80px; height:100px; object-fit:contain; display:block; transform:scale(1.8); transform-origin:top center; }
     .color-option .c-svg { width:56px; height:76px; display:block; margin:0 auto; }
     .color-option .c-name { font-size:0.58rem; color:var(--text); margin-top:4px; line-height:1.3; }
     .sheet-add-btn {
@@ -342,7 +343,7 @@ function openSheet(fid) {
 function renderColorGrid() {
   document.getElementById('color-grid').innerHTML = currentFlower.colors.map((c, i) => {
     const thumb = c.h
-      ? `<img src="${u(currentFlower.name, c.n)}" alt="${c.n}">`
+      ? `<div class="img-wrap"><img src="${u(currentFlower.name, c.n)}" alt="${c.n}"></div>`
       : svgShape(currentFlower.type, HEX[c.n], 56, 76).replace('<svg ', '<svg class="c-svg" ');
     return `<div class="color-option${i===0?' active':''}" onclick="pickColor(${i})">${thumb}<div class="c-name">${c.n}</div></div>`;
   }).join('');
