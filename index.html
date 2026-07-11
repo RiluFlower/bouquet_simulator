@@ -170,7 +170,7 @@
 </div>
 
 <div class="selected-bar" id="selected-bar">
-  <span class="empty-bar">No flowers selected yet</span>>No flowers selected yet<
+  <span class="empty-bar">No flowers selected yet</span>
 </div>
 
 <div class="picker-section">
@@ -191,7 +191,6 @@
 
 <script>
 const BASE = 'https://riluflower.github.io/bouquet_simulator/';
-
 
 const HEX = {
   'ホワイトセージ':'#e8ede5','ホワイトオリーブ':'#dde8d0',
@@ -267,73 +266,43 @@ function svgShape(type, hex, w, h) {
   const cx = w/2, cy = h*0.42;
   switch(type) {
     case 'tulip':
-      return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-        <ellipse cx="${cx}" cy="${cy}" rx="${w*0.28}" ry="${h*0.32}" fill="${c}" opacity="0.9"/>
-        <ellipse cx="${cx-w*0.15}" cy="${cy+h*0.05}" rx="${w*0.16}" ry="${h*0.25}" fill="${c}" opacity="0.7"/>
-        <ellipse cx="${cx+w*0.15}" cy="${cy+h*0.05}" rx="${w*0.16}" ry="${h*0.25}" fill="${c}" opacity="0.7"/>
-        <line x1="${cx}" y1="${cy+h*0.3}" x2="${cx}" y2="${h}" stroke="#6a9e5a" stroke-width="2"/>
-      </svg>`;
+      return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '"><ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (w*0.28) + '" ry="' + (h*0.32) + '" fill="' + c + '" opacity="0.9"/><ellipse cx="' + (cx-w*0.15) + '" cy="' + (cy+h*0.05) + '" rx="' + (w*0.16) + '" ry="' + (h*0.25) + '" fill="' + c + '" opacity="0.7"/><ellipse cx="' + (cx+w*0.15) + '" cy="' + (cy+h*0.05) + '" rx="' + (w*0.16) + '" ry="' + (h*0.25) + '" fill="' + c + '" opacity="0.7"/><line x1="' + cx + '" y1="' + (cy+h*0.3) + '" x2="' + cx + '" y2="' + h + '" stroke="#6a9e5a" stroke-width="2"/></svg>';
     case 'rose':
-      return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-        <circle cx="${cx}" cy="${cy}" r="${w*0.28}" fill="${c}" opacity="0.4"/>
-        <circle cx="${cx}" cy="${cy-h*0.06}" r="${w*0.22}" fill="${c}" opacity="0.6"/>
-        <circle cx="${cx}" cy="${cy-h*0.1}" r="${w*0.15}" fill="${c}" opacity="0.9"/>
-        <circle cx="${cx}" cy="${cy-h*0.12}" r="${w*0.08}" fill="${c}"/>
-        <line x1="${cx}" y1="${cy+h*0.2}" x2="${cx}" y2="${h}" stroke="#6a9e5a" stroke-width="2"/>
-      </svg>`;
+      return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '"><circle cx="' + cx + '" cy="' + cy + '" r="' + (w*0.28) + '" fill="' + c + '" opacity="0.4"/><circle cx="' + cx + '" cy="' + (cy-h*0.06) + '" r="' + (w*0.22) + '" fill="' + c + '" opacity="0.6"/><circle cx="' + cx + '" cy="' + (cy-h*0.1) + '" r="' + (w*0.15) + '" fill="' + c + '" opacity="0.9"/><circle cx="' + cx + '" cy="' + (cy-h*0.12) + '" r="' + (w*0.08) + '" fill="' + c + '"/><line x1="' + cx + '" y1="' + (cy+h*0.2) + '" x2="' + cx + '" y2="' + h + '" stroke="#6a9e5a" stroke-width="2"/></svg>';
     case 'sunflower':
-      return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-        ${[0,45,90,135].map(a=>`<ellipse cx="${cx+Math.cos(a*Math.PI/180)*w*0.25}" cy="${cy+Math.sin(a*Math.PI/180)*w*0.25}" rx="${w*0.12}" ry="${w*0.18}" fill="${c}" opacity="0.8" transform="rotate(${a} ${cx+Math.cos(a*Math.PI/180)*w*0.25} ${cy+Math.sin(a*Math.PI/180)*w*0.25})"/>`).join('')}
-        <circle cx="${cx}" cy="${cy}" r="${w*0.16}" fill="#a05820"/>
-        <line x1="${cx}" y1="${cy+h*0.22}" x2="${cx}" y2="${h}" stroke="#6a9e5a" stroke-width="2"/>
-      </svg>`;
+      return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">' + [0,45,90,135].map(function(a){return '<ellipse cx="' + (cx+Math.cos(a*Math.PI/180)*w*0.25) + '" cy="' + (cy+Math.sin(a*Math.PI/180)*w*0.25) + '" rx="' + (w*0.12) + '" ry="' + (w*0.18) + '" fill="' + c + '" opacity="0.8" transform="rotate(' + a + ' ' + (cx+Math.cos(a*Math.PI/180)*w*0.25) + ' ' + (cy+Math.sin(a*Math.PI/180)*w*0.25) + ')"/>';}).join('') + '<circle cx="' + cx + '" cy="' + cy + '" r="' + (w*0.16) + '" fill="#a05820"/><line x1="' + cx + '" y1="' + (cy+h*0.22) + '" x2="' + cx + '" y2="' + h + '" stroke="#6a9e5a" stroke-width="2"/></svg>';
     case 'leaf':
-      return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-        <ellipse cx="${cx}" cy="${cy}" rx="${w*0.22}" ry="${h*0.38}" fill="${c}" opacity="0.85"/>
-        <line x1="${cx}" y1="${cy-h*0.35}" x2="${cx}" y2="${h}" stroke="#4a7a3a" stroke-width="1.5"/>
-      </svg>`;
+      return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '"><ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (w*0.22) + '" ry="' + (h*0.38) + '" fill="' + c + '" opacity="0.85"/><line x1="' + cx + '" y1="' + (cy-h*0.35) + '" x2="' + cx + '" y2="' + h + '" stroke="#4a7a3a" stroke-width="1.5"/></svg>';
     case 'lavender':
-      return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-        <ellipse cx="${cx}" cy="${cy-h*0.15}" rx="${w*0.08}" ry="${h*0.28}" fill="${c}" opacity="0.9"/>
-        <ellipse cx="${cx-w*0.1}" cy="${cy-h*0.08}" rx="${w*0.07}" ry="${h*0.22}" fill="${c}" opacity="0.7"/>
-        <ellipse cx="${cx+w*0.1}" cy="${cy-h*0.08}" rx="${w*0.07}" ry="${h*0.22}" fill="${c}" opacity="0.7"/>
-        <line x1="${cx}" y1="${cy+h*0.1}" x2="${cx}" y2="${h}" stroke="#6a9e5a" stroke-width="2"/>
-      </svg>`;
+      return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '"><ellipse cx="' + cx + '" cy="' + (cy-h*0.15) + '" rx="' + (w*0.08) + '" ry="' + (h*0.28) + '" fill="' + c + '" opacity="0.9"/><ellipse cx="' + (cx-w*0.1) + '" cy="' + (cy-h*0.08) + '" rx="' + (w*0.07) + '" ry="' + (h*0.22) + '" fill="' + c + '" opacity="0.7"/><ellipse cx="' + (cx+w*0.1) + '" cy="' + (cy-h*0.08) + '" rx="' + (w*0.07) + '" ry="' + (h*0.22) + '" fill="' + c + '" opacity="0.7"/><line x1="' + cx + '" y1="' + (cy+h*0.1) + '" x2="' + cx + '" y2="' + h + '" stroke="#6a9e5a" stroke-width="2"/></svg>';
     case 'small':
-      return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-        ${[-1,0,1].map(dx=>[-1,0,1].map(dy=>`<circle cx="${cx+dx*w*0.14}" cy="${cy+dy*h*0.14}" r="${w*0.08}" fill="${c}" opacity="0.8"/>`).join('')).join('')}
-        <line x1="${cx}" y1="${cy+h*0.22}" x2="${cx}" y2="${h}" stroke="#6a9e5a" stroke-width="2"/>
-      </svg>`;
-    default: /* daisy, poppy, bell, orchid */
-      return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-        ${[0,60,120,180,240,300].map(a=>`<ellipse cx="${cx+Math.cos(a*Math.PI/180)*w*0.22}" cy="${cy+Math.sin(a*Math.PI/180)*h*0.2}" rx="${w*0.12}" ry="${h*0.16}" fill="${c}" opacity="0.8"/>`).join('')}
-        <circle cx="${cx}" cy="${cy}" r="${w*0.1}" fill="#ffd700" opacity="0.95"/>
-        <line x1="${cx}" y1="${cy+h*0.18}" x2="${cx}" y2="${h}" stroke="#6a9e5a" stroke-width="2"/>
-      </svg>`;
+      return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">' + [-1,0,1].map(function(dx){return [-1,0,1].map(function(dy){return '<circle cx="' + (cx+dx*w*0.14) + '" cy="' + (cy+dy*h*0.14) + '" r="' + (w*0.08) + '" fill="' + c + '" opacity="0.8"/>';}).join('');}).join('') + '<line x1="' + cx + '" y1="' + (cy+h*0.22) + '" x2="' + cx + '" y2="' + h + '" stroke="#6a9e5a" stroke-width="2"/></svg>';
+    default:
+      return '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">' + [0,60,120,180,240,300].map(function(a){return '<ellipse cx="' + (cx+Math.cos(a*Math.PI/180)*w*0.22) + '" cy="' + (cy+Math.sin(a*Math.PI/180)*h*0.2) + '" rx="' + (w*0.12) + '" ry="' + (h*0.16) + '" fill="' + c + '" opacity="0.8"/>';}).join('') + '<circle cx="' + cx + '" cy="' + cy + '" r="' + (w*0.1) + '" fill="#ffd700" opacity="0.95"/><line x1="' + cx + '" y1="' + (cy+h*0.18) + '" x2="' + cx + '" y2="' + h + '" stroke="#6a9e5a" stroke-width="2"/></svg>';
   }
 }
 
 /* ---- Render flower grid ---- */
 function renderGrid() {
   const grid = document.getElementById('flower-grid');
-  grid.innerHTML = FLOWERS.map(f => {
+  grid.innerHTML = FLOWERS.map(function(f) {
     const fc = f.colors[0];
-    const count = selected.filter(s => s.fid === f.id).length;
+    const count = selected.filter(function(s) { return s.fid === f.id; }).length;
     const thumb = fc.h
-      ? `<div class="img-wrap"><img src="${u(f.name, fc.n)}" alt="${f.name}"></div>`
+      ? '<div class="img-wrap"><img src="' + u(f.name, fc.n) + '" alt="' + f.name + '"></div>'
       : svgShape(f.type, HEX[fc.n], 56, 72).replace('<svg ', '<svg class="f-svg" ');
-    return `<div class="flower-card${count?` selected`:''}" data-fid="${f.id}" onclick="openSheet('${f.id}')">
-      ${count ? `<span class="count-badge">${count}</span>` : ''}
-      ${thumb}
-      <div class="f-name">${f.name}</div>
-      <div class="color-dots">${f.colors.slice(0,6).map(c=>`<span class="cdot" style="background:${HEX[c.n]||'#ccc'}"></span>`).join('')}</div>
-    </div>`;
+    return '<div class="flower-card' + (count ? ' selected' : '') + '" data-fid="' + f.id + '" onclick="openSheet('' + f.id + '')">' +
+      (count ? '<span class="count-badge">' + count + '</span>' : '') +
+      thumb +
+      '<div class="f-name">' + f.name + '</div>' +
+      '<div class="color-dots">' + f.colors.slice(0,6).map(function(c){return '<span class="cdot" style="background:' + (HEX[c.n]||'#ccc') + '"></span>';}).join('') + '</div>' +
+      '</div>';
   }).join('');
 }
 
 /* ---- Bottom sheet ---- */
 function openSheet(fid) {
-  currentFlower = FLOWERS.find(f => f.id === fid);
+  currentFlower = FLOWERS.find(function(f) { return f.id === fid; });
   currentColorIdx = 0;
   document.getElementById('sheet-flower-name').textContent = currentFlower.name;
   renderColorGrid();
@@ -342,17 +311,17 @@ function openSheet(fid) {
 }
 
 function renderColorGrid() {
-  document.getElementById('color-grid').innerHTML = currentFlower.colors.map((c, i) => {
+  document.getElementById('color-grid').innerHTML = currentFlower.colors.map(function(c, i) {
     const thumb = c.h
-      ? `<div class="img-wrap"><img src="${u(currentFlower.name, c.n)}" alt="${c.n}"></div>`
+      ? '<div class="img-wrap"><img src="' + u(currentFlower.name, c.n) + '" alt="' + c.n + '"></div>'
       : svgShape(currentFlower.type, HEX[c.n], 56, 76).replace('<svg ', '<svg class="c-svg" ');
-    return `<div class="color-option${i===0?' active':''}" onclick="pickColor(${i})">${thumb}<div class="c-name">${c.n}</div></div>`;
+    return '<div class="color-option' + (i===0 ? ' active' : '') + '" onclick="pickColor(' + i + ')">' + thumb + '<div class="c-name">' + c.n + '</div></div>';
   }).join('');
 }
 
 function pickColor(i) {
   currentColorIdx = i;
-  document.querySelectorAll('.color-option').forEach((el,j) => el.classList.toggle('active', j===i));
+  document.querySelectorAll('.color-option').forEach(function(el,j) { el.classList.toggle('active', j===i); });
 }
 
 function closeSheet() {
@@ -395,37 +364,15 @@ function refresh() {
 function renderBar() {
   const bar = document.getElementById('selected-bar');
   if (!selected.length) {
-    bar.innerHTML = `<span class="empty-bar">まだお花が選ばれていません</span>`;
+    bar.innerHTML = '<span class="empty-bar">No flowers selected yet</span>';
     return;
   }
-  bar.innerHTML = selected.map((s,i) => `
-    <div class="sel-chip">
-      <span class="dot" style="background:${s.chex}"></span>
-      <span>${s.fname}</span>
-      <span style="color:#b09080;font-size:0.6rem">${s.cname}</span>
-      <span class="rm" onclick="removeItem(${i})">✕</span>
-    </div>`).join('') +
-    `<button class="clear-btn" onclick="clearAll()">Clear</button>`;
+  bar.innerHTML = selected.map(function(s,i) {
+    return '<div class="sel-chip"><span class="dot" style="background:' + s.chex + '"></span><span>' + s.fname + '</span><span style="color:#b09080;font-size:0.6rem">' + s.cname + '</span><span class="rm" onclick="removeItem(' + i + ')">✕</span></div>';
+  }).join('') + '<button class="clear-btn" onclick="clearAll()">Clear</button>';
 }
 
 /* ---- Bouquet SVG ---- */
-const CONFIGS = {
-  1:[{fx:.5,fy:.3}],
-  2:[{fx:.35,fy:.32},{fx:.65,fy:.3}],
-  3:[{fx:.22,fy:.36},{fx:.5,fy:.26},{fx:.78,fy:.36}],
-  4:[{fx:.18,fy:.4},{fx:.42,fy:.28},{fx:.62,fy:.28},{fx:.82,fy:.4}],
-  5:[{fx:.12,fy:.44},{fx:.32,fy:.3},{fx:.52,fy:.24},{fx:.72,fy:.3},{fx:.88,fy:.44}],
-};
-function getPositions(n) {
-  if (CONFIGS[n]) return CONFIGS[n];
-  const pos = [];
-  for (let i = 0; i < n; i++) {
-    const t = i / (n - 1);
-    pos.push({ fx: 0.04 + t * 0.92, fy: 0.48 - 0.24 * Math.sin(Math.PI * t) });
-  }
-  return pos;
-}
-
 function renderBouquet() {
   const svg = document.getElementById('bouquet-svg');
   const emptyMsg = document.getElementById('empty-msg');
@@ -447,46 +394,48 @@ function renderBouquet() {
     }
   }
 
+  if (n === 1) { svg.innerHTML = drawItem(selected[0], 0); return; }
+  if (n === 2) { svg.innerHTML = drawItem(selected[0], -22) + drawItem(selected[1], 22); return; }
+
   function spread(count, maxA) {
     if (count <= 0) return [];
     if (count === 1) return [0];
-    return Array.from({length: count}, (_, i) => -maxA + i * (2 * maxA / (count - 1)));
+    return Array.from({length: count}, function(_, i) { return -maxA + i * (2 * maxA / (count - 1)); });
   }
 
   const backN  = Math.ceil(n / 2);
   const frontN = n - backN;
-  const backMax  = Math.min(56, 20 + (backN - 1) * 10);
-  const frontMax = frontN <= 1 ? 0 : Math.min(22, frontN * 8);
+  const backMax  = Math.min(58, 24 + (backN - 1) * 10);
+  const frontMax = frontN <= 1 ? 0 : Math.min(20, (frontN - 1) * 10);
 
   const backA  = spread(backN,  backMax);
   const frontA = spread(frontN, frontMax);
 
   let out = '';
-  backA.map((_,i) => i).sort((a,b) => Math.abs(backA[b]) - Math.abs(backA[a]))
-    .forEach(i => { out += drawItem(selected[i], backA[i]); });
-  frontA.map((_,i) => i).sort((a,b) => Math.abs(frontA[b]) - Math.abs(frontA[a]))
-    .forEach(i => { out += drawItem(selected[backN + i], frontA[i]); });
+  backA.map(function(_,i) { return i; }).sort(function(a,b) { return Math.abs(backA[b]) - Math.abs(backA[a]); })
+    .forEach(function(i) { out += drawItem(selected[i], backA[i]); });
+  frontA.map(function(_,i) { return i; }).sort(function(a,b) { return Math.abs(frontA[b]) - Math.abs(frontA[a]); })
+    .forEach(function(i) { out += drawItem(selected[backN + i], frontA[i]); });
 
   svg.innerHTML = out;
 }
+
 function flowerElem(type, hex, cx, cy) {
   const c = hex || '#e0c0c0';
   switch(type) {
     case 'rose':
-      return `<circle cx="${cx}" cy="${cy}" r="22" fill="${c}" opacity="0.35"/>
-        <circle cx="${cx}" cy="${cy-6}" r="17" fill="${c}" opacity="0.6"/>
-        <circle cx="${cx}" cy="${cy-10}" r="11" fill="${c}" opacity="0.85"/>
-        <circle cx="${cx}" cy="${cy-12}" r="6" fill="${c}"/>`;
+      return '<circle cx="' + cx + '" cy="' + cy + '" r="22" fill="' + c + '" opacity="0.35"/>' +
+        '<circle cx="' + cx + '" cy="' + (cy-6) + '" r="17" fill="' + c + '" opacity="0.6"/>' +
+        '<circle cx="' + cx + '" cy="' + (cy-10) + '" r="11" fill="' + c + '" opacity="0.85"/>' +
+        '<circle cx="' + cx + '" cy="' + (cy-12) + '" r="6" fill="' + c + '"/>';
     case 'lavender':
-      return `<ellipse cx="${cx}" cy="${cy-18}" rx="7" ry="24" fill="${c}" opacity="0.9"/>
-        <ellipse cx="${cx-10}" cy="${cy-10}" rx="6" ry="18" fill="${c}" opacity="0.7"/>
-        <ellipse cx="${cx+10}" cy="${cy-10}" rx="6" ry="18" fill="${c}" opacity="0.7"/>`;
+      return '<ellipse cx="' + cx + '" cy="' + (cy-18) + '" rx="7" ry="24" fill="' + c + '" opacity="0.9"/>' +
+        '<ellipse cx="' + (cx-10) + '" cy="' + (cy-10) + '" rx="6" ry="18" fill="' + c + '" opacity="0.7"/>' +
+        '<ellipse cx="' + (cx+10) + '" cy="' + (cy-10) + '" rx="6" ry="18" fill="' + c + '" opacity="0.7"/>';
     default:
-      return [0,60,120,180,240,300].map(a =>
-        `<ellipse cx="${cx+Math.cos(a*Math.PI/180)*18}" cy="${cy+Math.sin(a*Math.PI/180)*16}"
-          rx="10" ry="14" fill="${c}" opacity="0.8"
-          transform="rotate(${a} ${cx+Math.cos(a*Math.PI/180)*18} ${cy+Math.sin(a*Math.PI/180)*16})"/>`
-      ).join('') + `<circle cx="${cx}" cy="${cy}" r="8" fill="#ffd700" opacity="0.95"/>`;
+      return [0,60,120,180,240,300].map(function(a) {
+        return '<ellipse cx="' + (cx+Math.cos(a*Math.PI/180)*18) + '" cy="' + (cy+Math.sin(a*Math.PI/180)*16) + '" rx="10" ry="14" fill="' + c + '" opacity="0.8" transform="rotate(' + a + ' ' + (cx+Math.cos(a*Math.PI/180)*18) + ' ' + (cy+Math.sin(a*Math.PI/180)*16) + ')"/>';
+      }).join('') + '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="#ffd700" opacity="0.95"/>';
   }
 }
 
@@ -509,16 +458,16 @@ function flowerElem(type, hex, cx, cy) {
     const pad = SVG_W * 0.5;
     vx = clamp(vx, -pad, SVG_W + pad - vw);
     vy = clamp(vy, -pad, SVG_H + pad - vh);
-    svg.setAttribute('viewBox', `${vx} ${vy} ${vw} ${vh}`);
+    svg.setAttribute('viewBox', vx + ' ' + vy + ' ' + vw + ' ' + vh);
   }
 
   function resetView() {
     scale = 1; lastScale = 1;
     vx = 0; vy = 0; savedVx = 0; savedVy = 0;
-    svg.setAttribute('viewBox', `0 0 ${SVG_W} ${SVG_H}`);
+    svg.setAttribute('viewBox', '0 0 ' + SVG_W + ' ' + SVG_H);
   }
 
-  wrap.addEventListener('touchstart', e => {
+  wrap.addEventListener('touchstart', function(e) {
     if (e.touches.length === 2) {
       startDist = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
@@ -527,14 +476,14 @@ function flowerElem(type, hex, cx, cy) {
       savedVx = vx; savedVy = vy;
       panStart = null;
     } else if (e.touches.length === 1) {
-      panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, vx, vy };
+      panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, vx: vx, vy: vy };
       const now = Date.now();
       if (now - lastTap < 300) resetView();
       lastTap = now;
     }
   }, { passive: true });
 
-  wrap.addEventListener('touchmove', e => {
+  wrap.addEventListener('touchmove', function(e) {
     e.preventDefault();
     if (e.touches.length === 2) {
       const dist = Math.hypot(
@@ -552,7 +501,7 @@ function flowerElem(type, hex, cx, cy) {
     }
   }, { passive: false });
 
-  wrap.addEventListener('touchend', e => {
+  wrap.addEventListener('touchend', function(e) {
     lastScale = scale;
     savedVx = vx; savedVy = vy;
     if (e.touches.length === 0) panStart = null;
