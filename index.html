@@ -415,7 +415,7 @@ function renderBouquet() {
   backA.map(function(_,i) { return i; }).sort(function(a,b) { return Math.abs(backA[b]) - Math.abs(backA[a]); })
     .forEach(function(i) { out += drawItem(selected[i], backA[i]); });
   frontA.map(function(_,i) { return i; }).sort(function(a,b) { return Math.abs(frontA[b]) - Math.abs(frontA[a]); })
-    .forEach(function(i) { out += drawItem(selected[backN + i], frontA[i], H + 40); });
+    .forEach(function(i) { out += drawItem(selected[backN + i], frontA[i], H + 80); });
 
   svg.innerHTML = out;
 }
