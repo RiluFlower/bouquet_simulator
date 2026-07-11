@@ -194,7 +194,7 @@ const BASE = 'https://riluflower.github.io/bouquet_simulator/';
 
 const HEX = {
   'ホワイトセージ':'#e8ede5','ホワイトオリーブ':'#dde8d0',
-  'カーマインレッド':'#9e1b32','ローザピンク':'#f48fb1',
+  'カーマインレッド':'#9e1b32','ローズピンク':'#f48fb1',
   'ヒマワリ':'#ffd700','キャロット':'#ff7518',
   'ダスティブルー':'#8ba7c7','シトラス':'#f0e060',
   'ライラック':'#c8a0e0','レッド':'#cc2200',
@@ -221,7 +221,7 @@ const FLOWERS = [
   { id:'suzuran',       name:'すずらん',            type:'bell',
     colors:[{n:'ホワイトセージ',h:1},{n:'ホワイトオリーブ',h:1}] },
   { id:'tulip',         name:'チューリップ',         type:'tulip',
-    colors:[{n:'カーマインレッド',h:1},{n:'ローザピンク',h:1},{n:'ヒマワリ',h:1},{n:'キャロット',h:1},{n:'ダスティブルー',h:1},{n:'シトラス',h:1},{n:'ライラック',h:1},{n:'レッド',h:1}] },
+    colors:[{n:'カーマインレッド',h:1},{n:'ローズピンク',h:1},{n:'ヒマワリ',h:1},{n:'キャロット',h:1},{n:'ダスティブルー',h:1},{n:'シトラス',h:1},{n:'ライラック',h:1},{n:'レッド',h:1}] },
   { id:'daisy',         name:'デイジー',             type:'daisy',
     colors:[{n:'ミルクホワイトセージ',h:1}] },
   { id:'camomile',      name:'カモミール',           type:'daisy',
@@ -251,7 +251,7 @@ const FLOWERS = [
   { id:'kasumisou',     name:'カスミソウ',            type:'small',
     colors:[{n:'ホワイト',h:1}] },
   { id:'koflower',      name:'小花',                 type:'small',
-    colors:[{n:'ベビーピンク',h:1},{n:'コーラルピンク',h:1},{n:'ローザピンク',h:1},{n:'ライトアクア',h:1},{n:'シトラス',h:1},{n:'クリームイエロー',h:1},{n:'マゼンタ',h:1},{n:'ベージュ',h:1},{n:'アザミ',h:1},{n:'カーマインレッド',h:1},{n:'オレンジ',h:1},{n:'ライトブルー',h:1},{n:'ダスティブルー',h:1}] },
+    colors:[{n:'ベビーピンク',h:1},{n:'コーラルピンク',h:1},{n:'ローズピンク',h:1},{n:'ライトアクア',h:1},{n:'シトラス',h:1},{n:'クリームイエロー',h:1},{n:'マゼンタ',h:1},{n:'ベージュ',h:1},{n:'アザミ',h:1},{n:'カーマインレッド',h:1},{n:'オレンジ',h:1},{n:'ライトブルー',h:1},{n:'ダスティブルー',h:1}] },
   { id:'lavender',      name:'ラベンダー',            type:'lavender',
     colors:[{n:'アザミ',h:0},{n:'パープル',h:0}] },
 ];
@@ -441,7 +441,7 @@ function renderBouquet() {
     if (!s) return '';
     const anchorY = ay !== undefined ? ay : H;
     if (s.imgUrl) {
-      return '<image href="' + s.imgUrl + '" x="' + (bx-fw/2) + '" y="' + (anchorY-fh) + '" width="' + fw + '" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + anchorY + ')" preserveAspectRatio="xMidYMin meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
+      return '<image href="' + s.imgUrl + '" x="' + (bx-5000) + '" y="' + (anchorY-fh) + '" width="10000" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + anchorY + ')" preserveAspectRatio="xMidYMin meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
     } else {
       const rad = angle * Math.PI / 180;
       return flowerElem(s.ftype, s.chex, bx + Math.sin(rad)*fh*0.55, anchorY - Math.cos(rad)*fh*0.55);
