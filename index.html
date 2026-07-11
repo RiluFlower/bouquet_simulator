@@ -394,8 +394,6 @@ function renderBouquet() {
     }
   }
 
-  if (n === 1) { svg.innerHTML = drawItem(selected[0], 0); return; }
-  if (n === 2) { svg.innerHTML = drawItem(selected[0], -22) + drawItem(selected[1], 22); return; }
 
   function spread(count, maxA) {
     if (count <= 0) return [];
@@ -403,10 +401,11 @@ function renderBouquet() {
     return Array.from({length: count}, function(_, i) { return -maxA + i * (2 * maxA / (count - 1)); });
   }
 
-  const backN  = Math.ceil(n / 2);
-  const frontN = n - backN;
-  const backMax  = Math.min(58, 24 + (backN - 1) * 10);
-  const frontMax = frontN <= 1 ? 0 : Math.min(20, (frontN - 1) * 10);
+  // 1〜3本は全て後列。4本以降は前後2列に分割
+  const frontN = n <= 3 ? 0 : Math.floor(n / 2);
+  const backN  = n - frontN;
+  const backMax  = Math.min(34, 7 * backN);
+  const frontMax = Math.min(16, 8 * Math.max(0, frontN - 1));
 
   const backA  = spread(backN,  backMax);
   const frontA = spread(frontN, frontMax);
