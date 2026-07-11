@@ -384,13 +384,14 @@ function renderBouquet() {
   const fw = 130;
   const fh = 390;
 
-  function drawItem(s, angle) {
+  function drawItem(s, angle, ay) {
     if (!s) return '';
+    const anchorY = ay !== undefined ? ay : H;
     if (s.imgUrl) {
-      return '<image href="' + s.imgUrl + '" x="' + (bx-fw/2) + '" y="' + (H-fh) + '" width="' + fw + '" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + H + ')" preserveAspectRatio="xMidYMin meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
+      return '<image href="' + s.imgUrl + '" x="' + (bx-fw/2) + '" y="' + (anchorY-fh) + '" width="' + fw + '" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + anchorY + ')" preserveAspectRatio="xMidYMin meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
     } else {
       const rad = angle * Math.PI / 180;
-      return flowerElem(s.ftype, s.chex, bx + Math.sin(rad)*fh*0.55, H - Math.cos(rad)*fh*0.55);
+      return flowerElem(s.ftype, s.chex, bx + Math.sin(rad)*fh*0.55, anchorY - Math.cos(rad)*fh*0.55);
     }
   }
 
@@ -414,7 +415,7 @@ function renderBouquet() {
   backA.map(function(_,i) { return i; }).sort(function(a,b) { return Math.abs(backA[b]) - Math.abs(backA[a]); })
     .forEach(function(i) { out += drawItem(selected[i], backA[i]); });
   frontA.map(function(_,i) { return i; }).sort(function(a,b) { return Math.abs(frontA[b]) - Math.abs(frontA[a]); })
-    .forEach(function(i) { out += drawItem(selected[backN + i], frontA[i]); });
+    .forEach(function(i) { out += drawItem(selected[backN + i], frontA[i], H + 40); });
 
   svg.innerHTML = out;
 }
