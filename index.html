@@ -291,7 +291,7 @@ function renderGrid() {
     const thumb = fc.h
       ? '<div class="img-wrap"><img src="' + u(f.name, fc.n) + '" alt="' + f.name + '"></div>'
       : svgShape(f.type, HEX[fc.n], 56, 72).replace('<svg ', '<svg class="f-svg" ');
-    return '<div class="flower-card' + (count ? ' selected' : '') + '" data-fid="' + f.id + '" onclick="openSheet('' + f.id + '')">' +
+    return '<div class="flower-card' + (count ? ' selected' : '') + '" data-fid="' + f.id + '" onclick="openSheet(\'' + f.id + '\')">' +
       (count ? '<span class="count-badge">' + count + '</span>' : '') +
       thumb +
       '<div class="f-name">' + f.name + '</div>' +
