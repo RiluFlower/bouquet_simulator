@@ -259,6 +259,7 @@ const FLOWERS = [
 let selected = [];
 let currentFlower = null;
 let currentColorIdx = 0;
+let swapFirst = -1;
 
 /* ---- SVG fallback shapes ---- */
 function svgShape(type, hex, w, h) {
@@ -437,11 +438,17 @@ function renderBouquet() {
   const fh = 390;
 
   // ひな壇型2層ファン: 後列=外側広め, 前列=内側中心寄り (何本でも対応)
-  function drawItem(s, angle, ay) {
+  function drawItem(s, angle, ay, sidx) {
     if (!s) return '';
     const anchorY = ay !== undefined ? ay : H;
     if (s.imgUrl) {
-      return '<image href="' + s.imgUrl + '" x="' + (bx-5000) + '" y="' + (anchorY-fh) + '" width="10000" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + anchorY + ')" preserveAspectRatio="xMidYMin meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
+      const isSwapSel = sidx !== undefined && sidx === swapFirst;
+      const dimmed    = swapFirst >= 0 && !isSwapSel;
+      const filt = isSwapSel
+        ? 'filter:drop-shadow(0 0 12px rgba(42,157,150,1)) brightness(1.08)'
+        : 'filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))';
+      const opac = dimmed ? ';opacity:0.45' : '';
+      return '<image href="' + s.imgUrl + '" x="' + (bx-5000) + '" y="' + (anchorY-fh) + '" width="10000" height="' + fh + '" data-sidx="' + sidx + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + anchorY + ')" preserveAspectRatio="xMidYMin meet" style="' + filt + opac + '"/>';
     } else {
       const rad = angle * Math.PI / 180;
       return flowerElem(s.ftype, s.chex, bx + Math.sin(rad)*fh*0.55, anchorY - Math.cos(rad)*fh*0.55);
@@ -479,10 +486,10 @@ function renderBouquet() {
   let out = '';
   // 後列: 外側→内側の順（後列の中で内側が最前面）
   backA.map((_,i) => i).sort((a,b) => Math.abs(backA[b]) - Math.abs(backA[a]))
-    .forEach(i => { out += drawItem(backItems[i], backA[i]); });
+    .forEach(i => { out += drawItem(backItems[i], backA[i], undefined, selected.indexOf(backItems[i])); });
   // 前列: 外側→内側（中央が最前面＝最後に描画）
   frontA.map((_,i) => i).sort((a,b) => Math.abs(frontA[b]) - Math.abs(frontA[a]))
-    .forEach(i => { out += drawItem(frontItems[i], frontA[i], H + 120); });
+    .forEach(i => { out += drawItem(frontItems[i], frontA[i], H + 120, selected.indexOf(frontItems[i])); });
 
   svg.innerHTML = out;
 }
@@ -575,6 +582,46 @@ function flowerElem(type, hex, cx, cy) {
     savedVx = vx; savedVy = vy;
     if (e.touches.length === 0) panStart = null;
   }, { passive: true });
+})();
+
+/* ---- Long-press swap ---- */
+(function() {
+  const svg = document.getElementById('bouquet-svg');
+  let pressTimer = null;
+  let swapActivatedThisTouch = false;
+
+  svg.addEventListener('touchstart', e => {
+    swapActivatedThisTouch = false;
+    const el = e.target;
+    if (!el.hasAttribute('data-sidx')) return;
+    pressTimer = setTimeout(() => {
+      swapFirst = parseInt(el.getAttribute('data-sidx'));
+      swapActivatedThisTouch = true;
+      renderBouquet();
+    }, 500);
+  }, {passive: true});
+
+  svg.addEventListener('touchmove', () => {
+    clearTimeout(pressTimer); pressTimer = null;
+  }, {passive: true});
+
+  svg.addEventListener('touchend', e => {
+    clearTimeout(pressTimer); pressTimer = null;
+    if (swapActivatedThisTouch) { swapActivatedThisTouch = false; return; }
+    if (swapFirst < 0) return;
+    const t = e.changedTouches[0];
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    if (el && el.hasAttribute('data-sidx')) {
+      const idx = parseInt(el.getAttribute('data-sidx'));
+      if (idx !== swapFirst) {
+        const tmp = selected[swapFirst];
+        selected[swapFirst] = selected[idx];
+        selected[idx] = tmp;
+      }
+    }
+    swapFirst = -1;
+    refresh();
+  }, {passive: true});
 })();
 
 // Init
