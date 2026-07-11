@@ -379,15 +379,15 @@ function renderBouquet() {
   if (!selected.length) { svg.innerHTML = ''; emptyMsg.style.display = 'flex'; return; }
   emptyMsg.style.display = 'none';
 
-  const W=300, H=360, n=selected.length;
+  const W=300, H=460, n=selected.length;
   const bx = W/2;
-  const fw = n<=1?270 : n<=3?240 : n<=5?210 : n<=7?190 : Math.max(100, Math.floor(1100/n));
-  const fh = Math.round(fw * 4/3);
+  const fw = 130;
+  const fh = 390;
 
   function drawItem(s, angle) {
     if (!s) return '';
     if (s.imgUrl) {
-      return '<image href="' + s.imgUrl + '" x="' + (bx-fw/2) + '" y="' + (H-fh) + '" width="' + fw + '" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + H + ')" preserveAspectRatio="xMidYMid meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
+      return '<image href="' + s.imgUrl + '" x="' + (bx-fw/2) + '" y="' + (H-fh) + '" width="' + fw + '" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + H + ')" preserveAspectRatio="xMidYMin meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
     } else {
       const rad = angle * Math.PI / 180;
       return flowerElem(s.ftype, s.chex, bx + Math.sin(rad)*fh*0.55, H - Math.cos(rad)*fh*0.55);
