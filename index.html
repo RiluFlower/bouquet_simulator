@@ -103,7 +103,7 @@
     .flower-card[data-fid="kasumisou"] img { transform:scale(2.0); }
     .flower-card[data-fid="snowwillow"] img { transform:scale(1.5); }
     .flower-card .f-svg { width:48px; height:60px; display:block; margin:0 auto; }
-    .flower-card .f-name { font-size: 0.9rem; color: var(--text); margin-top:3px; line-height:1.2; }
+    .flower-card .f-name { font-size: 0.9rem; color: var(--text); margin-top:3px; line-height:1.2; white-space:nowrap; overflow:hidden; }
     .flower-card .color-dots { display:flex; justify-content:center; gap:2px; margin-top:3px; flex-wrap:wrap; }
     .flower-card .cdot { width:5px; height:5px; border-radius:50%; border:1px solid rgba(0,0,0,0.1); }
     .count-badge {
@@ -328,6 +328,18 @@ function renderGrid() {
       <div class="color-dots">${f.colors.slice(0,6).map(c=>`<span class="cdot" style="background:${HEX[c.n]||'#ccc'}"></span>`).join('')}</div>
     </div>`;
   }).join('');
+  fitNames();
+}
+
+function fitNames() {
+  document.querySelectorAll('.flower-card .f-name').forEach(el => {
+    el.style.fontSize = '';
+    let size = parseFloat(getComputedStyle(el).fontSize);
+    while (el.scrollWidth > el.clientWidth && size > 7) {
+      size -= 0.5;
+      el.style.fontSize = size + 'px';
+    }
+  });
 }
 
 /* ---- Bottom sheet ---- */
