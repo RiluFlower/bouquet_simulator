@@ -499,7 +499,7 @@ function renderBouquet() {
   midA.map((_,i) => i).sort((a,b) => Math.abs(midA[b]) - Math.abs(midA[a]))
     .forEach(i => { out += drawItem(midItems[i], midA[i], H + 85); });
   // 最前列: 3列モード(8本以上)は深め、2列モード(4〜7本)は浅め
-  const frontAY = normMidN > 0 ? H + 175 : H + 55;
+  const frontAY = normMidN > 0 ? H + 175 : H + 95;
   frontA.map((_,i) => i).sort((a,b) => Math.abs(frontA[b]) - Math.abs(frontA[a]))
     .forEach(i => { out += drawItem(frontItems[i], frontA[i], frontAY); });
 
