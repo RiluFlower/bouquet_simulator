@@ -483,9 +483,9 @@ function renderBouquet() {
   const midItems    = fgItems.slice(backFgCount, backFgCount + actualMidN);
   const frontItems  = fgItems.slice(backFgCount + actualMidN);
 
-  const backMax  = Math.min(34, 7 * actualBackN);
-  const midMax   = Math.min(22, 8 * Math.max(0, actualMidN - 1));
-  const frontMax = Math.min(12, 8 * Math.max(0, actualFrontN - 1));
+  const backMax  = Math.min(42, 9 * actualBackN);
+  const midMax   = Math.min(30, 11 * Math.max(0, actualMidN - 1));
+  const frontMax = Math.min(18, 12 * Math.max(0, actualFrontN - 1));
 
   const backA  = spread(actualBackN,  backMax);
   const midA   = spread(actualMidN,   midMax);
@@ -497,10 +497,10 @@ function renderBouquet() {
     .forEach(i => { out += drawItem(backItems[i], backA[i]); });
   // 中列 (8本以上のとき)
   midA.map((_,i) => i).sort((a,b) => Math.abs(midA[b]) - Math.abs(midA[a]))
-    .forEach(i => { out += drawItem(midItems[i], midA[i], H + 60); });
+    .forEach(i => { out += drawItem(midItems[i], midA[i], H + 85); });
   // 最前列
   frontA.map((_,i) => i).sort((a,b) => Math.abs(frontA[b]) - Math.abs(frontA[a]))
-    .forEach(i => { out += drawItem(frontItems[i], frontA[i], H + 120); });
+    .forEach(i => { out += drawItem(frontItems[i], frontA[i], H + 175); });
 
   svg.innerHTML = out;
 }
