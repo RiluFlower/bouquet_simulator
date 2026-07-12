@@ -447,7 +447,11 @@ function renderBouquet() {
     const ty = s.manualPos ? s.manualPos.y : 0;
     let inner;
     if (s.imgUrl) {
-      inner = '<image href="' + s.imgUrl + '" x="' + (bx-5000) + '" y="' + (anchorY-fh) + '" width="10000" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + anchorY + ')" preserveAspectRatio="xMidYMin meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
+      const rot = 'rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + anchorY + ')';
+      inner = '<g transform="' + rot + '">' +
+        '<image href="' + s.imgUrl + '" x="' + (bx-5000) + '" y="' + (anchorY-fh) + '" width="10000" height="' + fh + '" preserveAspectRatio="xMidYMin meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))" pointer-events="none"/>' +
+        '<rect x="' + (bx-60) + '" y="' + (anchorY-fh) + '" width="120" height="' + fh + '" fill="transparent" pointer-events="all"/>' +
+        '</g>';
     } else {
       const rad = angle * Math.PI / 180;
       inner = flowerElem(s.ftype, s.chex, bx + Math.sin(rad)*fh*0.55, anchorY - Math.cos(rad)*fh*0.55);
