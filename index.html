@@ -459,28 +459,46 @@ function renderBouquet() {
   const bgItems = selected.filter(s => BG_IDS.has(s.fid));
   const fgItems = selected.filter(s => !BG_IDS.has(s.fid));
 
-  // 1〜3本は全て後列。4本以降は前後2列に分割
-  const normalFrontN = n <= 3 ? 0 : Math.floor(n / 2);
-  const normalBackN  = n - normalFrontN;
+  // レイヤー本数を決定: 1〜3=後列のみ, 4〜7=2列, 8以上=3列(後4+中間+最前)
+  let normBackN, normMidN, normFrontN;
+  if (n <= 3) {
+    normBackN = n; normMidN = 0; normFrontN = 0;
+  } else if (n <= 7) {
+    normFrontN = Math.floor(n / 2); normBackN = n - normFrontN; normMidN = 0;
+  } else {
+    normBackN = 4;
+    normFrontN = Math.round((n - 4) / 3);
+    normMidN = n - 4 - normFrontN;
+  }
 
-  // bg花は後列を優先。必要なら後列を拡大
-  const actualBackN  = Math.max(normalBackN, bgItems.length);
-  const actualFrontN = n - actualBackN;
-  const backFgCount  = actualBackN - bgItems.length;
-  const backItems    = bgItems.concat(fgItems.slice(0, backFgCount));
-  const frontItems   = fgItems.slice(backFgCount);
+  // bg花は後列を優先。必要なら後列を拡大し中/前を縮小
+  const bgCount = bgItems.length;
+  const actualBackN  = Math.max(normBackN, bgCount);
+  const overflow     = actualBackN - normBackN;
+  const actualMidN   = Math.max(0, normMidN - Math.max(0, overflow - normFrontN));
+  const actualFrontN = Math.max(0, n - actualBackN - actualMidN);
+
+  const backFgCount = actualBackN - bgCount;
+  const backItems   = bgItems.concat(fgItems.slice(0, backFgCount));
+  const midItems    = fgItems.slice(backFgCount, backFgCount + actualMidN);
+  const frontItems  = fgItems.slice(backFgCount + actualMidN);
 
   const backMax  = Math.min(34, 7 * actualBackN);
-  const frontMax = Math.min(16, 8 * Math.max(0, actualFrontN - 1));
+  const midMax   = Math.min(22, 8 * Math.max(0, actualMidN - 1));
+  const frontMax = Math.min(12, 8 * Math.max(0, actualFrontN - 1));
 
   const backA  = spread(actualBackN,  backMax);
+  const midA   = spread(actualMidN,   midMax);
   const frontA = spread(actualFrontN, frontMax);
 
   let out = '';
-  // 後列: 外側→内側の順（後列の中で内側が最前面）
+  // 後列: 外側→内側の順
   backA.map((_,i) => i).sort((a,b) => Math.abs(backA[b]) - Math.abs(backA[a]))
     .forEach(i => { out += drawItem(backItems[i], backA[i]); });
-  // 前列: 外側→内側（中央が最前面＝最後に描画）
+  // 中列 (8本以上のとき)
+  midA.map((_,i) => i).sort((a,b) => Math.abs(midA[b]) - Math.abs(midA[a]))
+    .forEach(i => { out += drawItem(midItems[i], midA[i], H + 60); });
+  // 最前列
   frontA.map((_,i) => i).sort((a,b) => Math.abs(frontA[b]) - Math.abs(frontA[a]))
     .forEach(i => { out += drawItem(frontItems[i], frontA[i], H + 120); });
 
