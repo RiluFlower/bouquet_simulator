@@ -370,12 +370,14 @@ function addFlower() {
     chex: HEX[c.n] || '#eee',
     imgUrl: c.h ? u(currentFlower.name, c.n) : null,
   });
+  selected.forEach(s => { s.manualPos = null; });
   closeSheet();
   refresh();
 }
 
 function removeItem(i) {
   selected.splice(i, 1);
+  selected.forEach(s => { s.manualPos = null; });
   refresh();
 }
 
@@ -436,16 +438,21 @@ function renderBouquet() {
   const fw = 130;
   const fh = 390;
 
-  // ひな壁型2層ファン: 後列=外側広め, 前列=内側中心寄り (何本でも対応)
+  // ひな壇型2層ファン: 後列=外側広め, 前列=内側中心寄り (何本でも対応)
   function drawItem(s, angle, ay) {
     if (!s) return '';
     const anchorY = ay !== undefined ? ay : H;
+    const idx = selected.indexOf(s);
+    const tx = s.manualPos ? s.manualPos.x : 0;
+    const ty = s.manualPos ? s.manualPos.y : 0;
+    let inner;
     if (s.imgUrl) {
-      return '<image href="' + s.imgUrl + '" x="' + (bx-5000) + '" y="' + (anchorY-fh) + '" width="10000" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + anchorY + ')" preserveAspectRatio="xMidYMin meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
+      inner = '<image href="' + s.imgUrl + '" x="' + (bx-5000) + '" y="' + (anchorY-fh) + '" width="10000" height="' + fh + '" transform="rotate(' + angle.toFixed(1) + ' ' + bx + ' ' + anchorY + ')" preserveAspectRatio="xMidYMin meet" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.15))"/>';
     } else {
       const rad = angle * Math.PI / 180;
-      return flowerElem(s.ftype, s.chex, bx + Math.sin(rad)*fh*0.55, anchorY - Math.cos(rad)*fh*0.55);
+      inner = flowerElem(s.ftype, s.chex, bx + Math.sin(rad)*fh*0.55, anchorY - Math.cos(rad)*fh*0.55);
     }
+    return '<g data-idx="' + idx + '" transform="translate(' + tx + ',' + ty + ')">' + inner + '</g>';
   }
 
   function spread(count, maxA) {
@@ -513,6 +520,46 @@ function renderBouquet() {
   }
 
   svg.innerHTML = out;
+  attachFlowerDrag(svg);
+}
+
+function attachFlowerDrag(svg) {
+  let dragging = null;
+
+  function screenToSVG(clientX, clientY) {
+    const pt = svg.createSVGPoint();
+    pt.x = clientX; pt.y = clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  svg.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1) return;
+    const el = e.target.closest('[data-idx]');
+    if (!el) return;
+    e.stopPropagation();
+    const idx = parseInt(el.getAttribute('data-idx'));
+    const svgPt = screenToSVG(e.touches[0].clientX, e.touches[0].clientY);
+    dragging = {
+      el, idx,
+      startSVG: svgPt,
+      startManual: selected[idx].manualPos ? { ...selected[idx].manualPos } : { x: 0, y: 0 }
+    };
+  }, { passive: false });
+
+  svg.addEventListener('touchmove', e => {
+    if (!dragging || e.touches.length !== 1) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const svgPt = screenToSVG(e.touches[0].clientX, e.touches[0].clientY);
+    const dx = svgPt.x - dragging.startSVG.x;
+    const dy = svgPt.y - dragging.startSVG.y;
+    const newX = dragging.startManual.x + dx;
+    const newY = dragging.startManual.y + dy;
+    selected[dragging.idx].manualPos = { x: newX, y: newY };
+    dragging.el.setAttribute('transform', 'translate(' + newX + ',' + newY + ')');
+  }, { passive: false });
+
+  svg.addEventListener('touchend', () => { dragging = null; }, { passive: true });
 }
 
 function flowerElem(type, hex, cx, cy) {
